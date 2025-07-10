@@ -30,7 +30,7 @@ with app.app_context():
         db.session.commit()
 
 def calculate_rewards(state):
-    reward_units = state.total_work_minutes // 60
+    reward_units = state.total_work_minutes / 60
     return {
         "movie": reward_units * 10 - state.used_movie,
         "youtube": reward_units * 5 - state.used_youtube,
@@ -51,7 +51,7 @@ def stop_timer():
         return jsonify({"error": "Timer was not started."}), 400
 
     now = datetime.now()
-    duration = int((now - timer_start).total_seconds() / 60)
+    duration = int((now - timer_start).total_seconds() / 60 * 3600)#60 times more
     timer_start = None
 
     state = UserState.query.get(1) #id is 1 (assuming 1 user)
