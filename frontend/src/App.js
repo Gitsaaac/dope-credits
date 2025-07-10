@@ -9,7 +9,7 @@ function App() {
   const [rewardType, setRewardType] = useState("movie");
   const [rewardAmount, setRewardAmount] = useState("");
 
-  // Start timer
+  // Start timer function
   const startTimer = async () => {
     await fetch('http://localhost:5000/start', { method: 'POST' });
     setElapsedSeconds(0); // reset session time
@@ -33,10 +33,10 @@ function App() {
     if (timerRunning) {
       interval = setInterval(() => {
         setElapsedSeconds(prev => prev + 1);
-      }, 1000);
+      }, 1000); //every 1000ms it increases by a second
     }
     return () => clearInterval(interval);
-  }, [timerRunning]);
+  }, [timerRunning]); //this effect runs everytime timerRunning changes
 
   // Fetch status on load
   useEffect(() => {
@@ -49,7 +49,7 @@ function App() {
   }, []);
 
   // 🧠 Calculate session rewards from elapsedSeconds
-  const liveRewards = useMemo(() => {
+  const liveRewards = useMemo(() => { //this should change when elapsed seconds changes
     const minutes = elapsedSeconds / 60;
     const rewardUnits = minutes / 60;
     return {
@@ -58,7 +58,7 @@ function App() {
       instagram: rewardUnits * 1,
       snack_money: rewardUnits * 1.0
     };
-  }, [elapsedSeconds]);
+  }, [elapsedSeconds]); //this determines when liveRewards changes
 
   // Use reward
   const useReward = async () => {
@@ -69,11 +69,8 @@ function App() {
     });
     const data = await res.json();
     setStatus(data.message);
-
-    // Refresh backend rewards
-    const rewardsRes = await fetch('http://localhost:5000/status');
-    const rewardsData = await rewardsRes.json();
-    setRewards(rewardsData.rewards);
+    setRewards(data.rewards)
+    setRewardAmount(""); //clear input
   };
 
   // Manually add time
@@ -81,7 +78,7 @@ function App() {
     const res = await fetch('http://localhost:5000/manual_add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ minutes: parseInt(manualMinutes) })
+      body: JSON.stringify({ minutes: parseInt(manualMinutes) }) //user input 
     });
     const data = await res.json();
     setStatus(data.message);
@@ -133,7 +130,7 @@ function App() {
         <button onClick={useReward}>Use</button>
       </div>
 
-      <p style={{ color: "green" }}>{status}</p>
+      <p style={{ color: "purple" }}>{status}</p>
     </div>
   );
 }

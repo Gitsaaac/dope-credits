@@ -21,7 +21,8 @@ class UserState(db.Model):
     used_youtube = db.Column(db.Integer, default=0)
     used_instagram = db.Column(db.Integer, default=0)
     used_snack_money = db.Column(db.Float, default=0.0)
-
+    
+#creates userstate 1 if it doesn't exist
 with app.app_context():
     db.create_all()
     if UserState.query.get(1) is None:
@@ -53,7 +54,7 @@ def stop_timer():
     duration = int((now - timer_start).total_seconds() / 60)
     timer_start = None
 
-    state = UserState.query.get(1)
+    state = UserState.query.get(1) #id is 1 (assuming 1 user)
     state.total_work_minutes += duration
     db.session.commit()
 
@@ -85,11 +86,15 @@ def use_reward():
         return jsonify({"error": "Invalid reward type"}), 400
 
     db.session.commit()
-    return jsonify({"message": f"{amount} {reward_type} used."})
+    rewards = calculate_rewards(state)
+
+    return jsonify({"message": f"{amount} {reward_type} used.",
+                    "rewards":rewards
+                })
 
 @app.route('/manual_add', methods=['POST'])
 def manual_add():
-    data = request.json
+    data = request.json #request gets data from frontend, when it makes http request to backend
     minutes = data.get("minutes", 0)
 
     state = UserState.query.get(1)
