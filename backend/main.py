@@ -16,10 +16,10 @@ timer_start = None
 # Model
 class UserState(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    total_work_minutes = db.Column(db.Integer, default=0)
-    used_movie = db.Column(db.Integer, default=0)
-    used_youtube = db.Column(db.Integer, default=0)
-    used_instagram = db.Column(db.Integer, default=0)
+    total_work_minutes = db.Column(db.Float, default=0) #changed from int to float
+    used_movie = db.Column(db.Float, default=0)
+    used_youtube = db.Column(db.Float, default=0)
+    used_instagram = db.Column(db.Float, default=0)
     used_snack_money = db.Column(db.Float, default=0.0)
     
 #creates userstate 1 if it doesn't exist
@@ -51,7 +51,7 @@ def stop_timer():
         return jsonify({"error": "Timer was not started."}), 400
 
     now = datetime.now()
-    duration = int((now - timer_start).total_seconds() / 60 * 3600)#60 times more
+    duration = float((now - timer_start).total_seconds() / 60) #int to float    
     timer_start = None
 
     state = UserState.query.get(1) #id is 1 (assuming 1 user)
